@@ -138,7 +138,7 @@ main{min-width:0;padding:22px clamp(16px,4vw,48px) 64px}
 .examcard{border:1px solid var(--line);background:var(--panel);border-radius:var(--radius);padding:18px 20px;margin:26px 0 0;text-align:left}
 .examcard h2{font-size:15px;margin:0 0 8px}
 .examcard ol{margin:0 0 14px;padding-left:20px;color:var(--dim)}
-.tag{font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line2);padding:2px 7px;color:var(--dim);margin-left:8px}
+.tag{font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line2);padding:2px 7px;color:var(--dim);margin-left:8px;white-space:nowrap;display:inline-block;vertical-align:2px}
 [hidden]{display:none!important}
 @media (max-width:1180px){.work{grid-template-columns:minmax(0,1fr);max-width:820px}.computer{position:static;order:-1}}
 @media (max-width:900px){.app{grid-template-columns:minmax(0,1fr)}.side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);gap:12px}.side nav,.side .more{display:none}.account{margin-top:0;border-top:0;padding-top:0}.work{grid-template-columns:minmax(0,1fr)}.computer{position:static}.welcome{padding-top:5vh}.q{max-width:92%}}
@@ -425,7 +425,12 @@ function client(BOOT) {
       $('[data-shell]', panel).hidden = s !== 'running'; $('[data-stop]', panel).hidden = s !== 'running';
       const open = $('[data-open]', panel); if (open) { open.hidden = s === 'running'; open.disabled = s === 'starting'; }
     };
-    const gone = (r) => { if (r.gone) { computer = null; store.set('learn:computer', null); state('off'); } };
+    const gone = (r) => {
+      if (!r.gone) return false;
+      computer = null; store.set('learn:computer', null); state('off');
+      say('That computer has stopped, so the command did not run. Open a new one; your passed steps are kept.', true);
+      return true;
+    };
     const open = async () => {
       if (computer) return computer;
       if (!BOOT.login || !BOOT.computers) { say(BOOT.computers ? 'Sign in with GitHub to open a computer.' : 'Computers are not set up on this site yet.', true); return null; }
@@ -475,14 +480,14 @@ function client(BOOT) {
         if (!(await open())) return;
         file = fileBtn.dataset.file;
         const r = await post('/api/file', { computer, lab: LAB, path: file });
-        if (r.error) { gone(r); return say(r.error, true); }
+        if (r.error) { return gone(r) || say(r.error, true); }
         $('[data-editor-name]', editor).textContent = file + (r.fresh ? ' (new file)' : '');
         $('textarea', editor).value = r.content || ''; editor.hidden = false; $('textarea', editor).focus();
       }
       if (e.target.closest('[data-close]')) editor.hidden = true;
       if (e.target.closest('[data-save]') && file) {
         const r = await post('/api/file', { computer, lab: LAB, path: file, content: $('textarea', editor).value });
-        if (r.error) { gone(r); return say(r.error, true); }
+        if (r.error) { return gone(r) || say(r.error, true); }
         $('[data-editor-name]', editor).textContent = `${file} (saved)`; print(`saved ${file}\n`);
       }
       const check = e.target.closest('[data-check]');
