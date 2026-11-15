@@ -140,6 +140,7 @@ main{min-width:0;padding:22px clamp(16px,4vw,48px) 64px}
 .examcard ol{margin:0 0 14px;padding-left:20px;color:var(--dim)}
 .tag{font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line2);padding:2px 7px;color:var(--dim);margin-left:8px;white-space:nowrap;display:inline-block;vertical-align:2px}
 [hidden]{display:none!important}
+@media (max-width:900px){.linkbtn{min-height:44px;padding:0 4px}}
 @media (max-width:1180px){.work{grid-template-columns:minmax(0,1fr);max-width:820px}.computer{position:static;order:-1}}
 @media (max-width:900px){.app{grid-template-columns:minmax(0,1fr)}.side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);gap:12px}.side nav,.side .more{display:none}.account{margin-top:0;border-top:0;padding-top:0}.work{grid-template-columns:minmax(0,1fr)}.computer{position:static}.welcome{padding-top:5vh}.q{max-width:92%}}
 `;
