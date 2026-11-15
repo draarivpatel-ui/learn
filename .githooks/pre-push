@@ -1,0 +1,4 @@
+#!/bin/sh
+# Before each push: the whole test suite.
+set -e
+bun test test

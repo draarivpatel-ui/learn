@@ -47,3 +47,7 @@ that means `FLEET_SERVICE_SECRET` holds the same value as Fleet's `CHAT_SERVICE_
 ## Licence
 
 MIT. See [LICENSE](LICENSE).
+
+## Git hooks
+
+`bun install` turns them on (`git config core.hooksPath .githooks`). Before a commit, `bun run check` makes sure every module parses and imports. Before a push, `bun test test` runs.

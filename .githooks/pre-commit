@@ -1,0 +1,4 @@
+#!/bin/sh
+# Before each commit: every module must parse and import cleanly.
+set -e
+bun run check
