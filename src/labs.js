@@ -19,6 +19,9 @@ export const labsFor = (question, limit = 2) => search(index, question, limit).f
 export const labDir = (lab) => `labs/${lab.id}`;
 // Each command is a new shell on the computer, so what a learner exports is gone by the next one. A .env file in the
 // lab's folder is loaded before every command instead: that is where a lab's keys and settings go.
-export const inLabDir = (lab, command) => `mkdir -p ${labDir(lab)} && cd ${labDir(lab)} && set -a && { [ ! -f .env ] || . ./.env; } && set +a && ( ${command}\n)`;
+// A cloud computer starts bare and small: put uv and flisk on the PATH (installed once, quietly) and pick a model its
+// two CPUs can answer with. A learner's .env, loaded after, can still change LAB_MODEL.
+export const SETUP = 'export PATH=$HOME/.local/bin:$HOME/.npm-global/bin:$PATH LAB_MODEL=smollm2:135m; { command -v uv || curl -LsSf https://astral.sh/uv/install.sh | sh; command -v flisk || npm install -g --prefix $HOME/.npm-global @flisk-sh/flisk; } >/dev/null 2>&1';
+export const inLabDir = (lab, command) => `${SETUP}; mkdir -p ${labDir(lab)} && cd ${labDir(lab)} && set -a && { [ ! -f .env ] || . ./.env; } && set +a && ( ${command}\n)`;
 // A file a learner may open or save: a plain relative path inside the lab's folder.
 export const safeFile = (path) => (/^[A-Za-z0-9_][A-Za-z0-9_./-]{0,120}$/.test(String(path)) && !String(path).split('/').some((p) => p === '..' || p === '') ? String(path) : null);

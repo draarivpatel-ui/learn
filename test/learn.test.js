@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { answerMessages, finishAnswer, passagesFor, takeToday } from '../src/answer.js';
 import { handle } from '../src/index.js';
-import { inLabDir, LAB_CARDS, labById, labsFor, safeFile } from '../src/labs.js';
+import { inLabDir, LAB_CARDS, SETUP, labById, labsFor, safeFile } from '../src/labs.js';
 import { buildIndex, search } from '../src/search.js';
 import { makeSession } from '../src/session.js';
 
@@ -92,7 +92,7 @@ describe('labs', () => {
     expect(labsFor(lab.title).map((l) => l.id)).toContain(LAB);
   });
   test('a lab command runs in the lab folder', () => {
-    expect(inLabDir(labById(LAB), 'ls')).toBe(`mkdir -p labs/${LAB} && cd labs/${LAB} && set -a && { [ ! -f .env ] || . ./.env; } && set +a && ( ls\n)`);
+    expect(inLabDir(labById(LAB), 'ls')).toBe(`${SETUP}; mkdir -p labs/${LAB} && cd labs/${LAB} && set -a && { [ ! -f .env ] || . ./.env; } && set +a && ( ls\n)`);
   });
   test('file names stay inside the lab folder', () => {
     expect(safeFile('src/app.py')).toBe('src/app.py');
