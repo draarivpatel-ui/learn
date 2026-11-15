@@ -2,6 +2,7 @@
 //   Learn     answers from the Flisk docs, with the pages named. Needs no computer.
 //   Practice  a lab's steps run on the learner's own Fleet computer, and each step's check runs there too.
 //   Exam      not built yet: the page says what it will be.
+import { verifyLoginToken } from './login-token.js';
 import { githubAuthorizeUrl, githubLogin } from './auth.js';
 import { answerMessages, askModel, finishAnswer, MAX_QUESTION, passagesFor, takeToday } from './answer.js';
 import { fleetClient } from './fleet.js';
@@ -137,6 +138,25 @@ export async function handle(request, env, { fetchImpl = fetch, cache = globalTh
     // The pages take no query string, so crawlers get no endless address space to walk.
     if (path === '/robots.txt') return new Response('User-agent: *\nDisallow: /*?\nDisallow: /api/\nDisallow: /auth/\n', { headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'public, max-age=86400' } });
 
+    if (path === '/auth/login' && env.LOGIN_PUBLIC_KEY && env.SESSION_SECRET) {
+      // One Flisk sign-in for every site (login.flisk.si): no GitHub app or secret of our own, only its public key.
+      const state = crypto.randomUUID();
+      const back = new URL('/auth/done', origin);
+      back.searchParams.set('s', state);
+      const headers = new Headers({ location: `${env.LOGIN_ORIGIN || 'https://login.flisk.si'}/start?return=${encodeURIComponent(back.href)}` });
+      headers.append('set-cookie', `learn_state=${state}; Path=/auth; HttpOnly; Secure; SameSite=Lax; Max-Age=600`);
+      return new Response(null, { status: 302, headers });
+    }
+    if (path === '/auth/done') {
+      const cookie = /(?:^|;\s*)learn_state=([^;]+)/.exec(request.headers.get('cookie') || '')?.[1] || '';
+      const s = url.searchParams.get('s') || '';
+      const who = env.LOGIN_PUBLIC_KEY && env.SESSION_SECRET && s && s === cookie ? await verifyLoginToken(url.searchParams.get('flisk_token'), env.LOGIN_PUBLIC_KEY, origin) : null;
+      if (!who || !/^[A-Za-z0-9-]{1,39}$/.test(who.login)) return html(page({ mode: 'practice', notice: 'Sign-in did not finish. Try again.' }), 400);
+      const headers = new Headers({ location: '/practice' });
+      headers.append('set-cookie', await makeSession(env, who.login));
+      headers.append('set-cookie', 'learn_state=; Path=/auth; Max-Age=0');
+      return new Response(null, { status: 302, headers });
+    }
     if (path === '/auth/login') {
       if (!env.GITHUB_CLIENT_ID || !env.SESSION_SECRET) return html(page({ mode: 'practice', notice: 'Sign-in is not set up on this site yet.' }), 503);
       const state = crypto.randomUUID();
