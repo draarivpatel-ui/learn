@@ -43,3 +43,7 @@ that means `FLEET_SERVICE_SECRET` holds the same value as Fleet's `CHAT_SERVICE_
 - A command on a computer may run for 60 seconds at most (Fleet's limit).
 - Each command is a new shell. A `.env` file in the lab's folder is loaded before every command.
 - Passed steps are kept in the learner's browser, not on the server.
+
+## Licence
+
+MIT. See [LICENSE](LICENSE).
