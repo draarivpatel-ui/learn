@@ -330,3 +330,37 @@ describe('Practice on a Fleet computer', () => {
     expect(f.calls[0]).toMatchObject({ method: 'DELETE', path: '/v1/pods/pod-1' });
   });
 });
+
+describe('sign-in through login.flisk.si', async () => {
+  const { makeKeys, signToken } = await import('./login-signer.js');
+  const keys = await makeKeys();
+  const other = await makeKeys();
+  const env = { ...baseEnv, LOGIN_PUBLIC_KEY: keys.publicKey };
+  const done = (s, token, cookie = `learn_state=${s}`) => handle(new Request(`${ORIGIN}/auth/done?s=${s}&flisk_token=${encodeURIComponent(token)}`, { headers: { cookie } }), env, {});
+  test('login sends the visitor to login.flisk.si with a state cookie, no GitHub app needed', async () => {
+    const res = await get('/auth/login', env);
+    const to = new URL(res.headers.get('location'));
+    expect(to.origin + to.pathname).toBe('https://login.flisk.si/start');
+    const s = new URL(to.searchParams.get('return')).searchParams.get('s');
+    expect(res.headers.get('set-cookie')).toContain(`learn_state=${s}`);
+  });
+  test('a good token signs the learner in', async () => {
+    const r = await done('x', await signToken(keys.signingKey, { login: 'ada', id: 7, aud: ORIGIN }));
+    expect(r.status).toBe(302);
+    expect(r.headers.get('location')).toBe('/practice');
+    expect(r.headers.getSetCookie().join(';')).toContain('learn_sess=ada.');
+  });
+  test.each([
+    ['another site', async () => signToken(keys.signingKey, { login: 'ada', id: 7, aud: 'https://chat.flisk.si' })],
+    ['another key', async () => signToken(other.signingKey, { login: 'ada', id: 7, aud: ORIGIN })],
+    ['an expired token', async () => signToken(keys.signingKey, { login: 'ada', id: 7, aud: ORIGIN }, Date.now() - 3600e3)],
+    ['a login that is not a GitHub name', async () => signToken(keys.signingKey, { login: 'a/../b', id: 7, aud: ORIGIN })],
+  ])('refuses a token for %s', async (_, make) => {
+    expect((await done('x', await make())).status).toBe(400);
+  });
+  test('refuses a wrong or missing state', async () => {
+    const t = await signToken(keys.signingKey, { login: 'ada', id: 7, aud: ORIGIN });
+    expect((await done('x', t, 'learn_state=y')).status).toBe(400);
+    expect((await done('x', t, '')).status).toBe(400);
+  });
+});

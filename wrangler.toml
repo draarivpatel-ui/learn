@@ -7,6 +7,7 @@ routes = [{ pattern = "learn.flisk.si", custom_domain = true }]
 
 [vars]
 PUBLIC_ORIGIN = "https://learn.flisk.si"
+LOGIN_PUBLIC_KEY = "g_3cGlqaMDf4mM4Bgfv8EO6js7yW_bcSW7cOUpSwLc0"
 FLEET_URL = "https://fleet.flisk.si"
 INFERENCE_URL = "https://inference.flisk.si/v1/chat/completions"
 INFERENCE_MODEL = "flisk-wolf-chat"
@@ -24,3 +25,6 @@ service = "flisk-inference"
 #   FLEET_SERVICE_SECRET                    the secret Fleet trusts a Flisk site by (today: the value of Fleet's CHAT_SERVICE_SECRET)
 #   INFERENCE_KEY                           a key from inference.flisk.si for written answers
 # Without the GitHub and Fleet secrets Learn still works; Practice shows the labs and says computers are not set up.
+
+# Sign-in through login.flisk.si (flisk-sh/login): LOGIN_PUBLIC_KEY (login.flisk.si/key) replaces the GitHub app and its
+# two secrets above; only SESSION_SECRET is still needed. LOGIN_ORIGIN defaults to https://login.flisk.si.
