@@ -1,0 +1,25 @@
+name = "flisk-learn"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+
+routes = [{ pattern = "learn.flisk.si", custom_domain = true }]
+
+[vars]
+PUBLIC_ORIGIN = "https://learn.flisk.si"
+FLEET_URL = "https://fleet.flisk.si"
+INFERENCE_URL = "https://inference.flisk.si/v1/chat/completions"
+INFERENCE_MODEL = "flisk-wolf-chat"
+# Written answers a day for everyone together. The rest of the day Learn shows the docs passages themselves.
+LEARN_AI_PER_DAY = "60"
+
+# A Worker cannot call another Worker on the same domain by its public address, so the model is reached by binding.
+[[services]]
+binding = "INFERENCE"
+service = "flisk-inference"
+
+# Secrets (wrangler secret put <NAME>):
+#   GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET  a GitHub OAuth app whose callback is https://learn.flisk.si/auth/callback
+#   SESSION_SECRET                          any long random string; signs the sign-in cookie
+#   FLEET_SERVICE_SECRET                    the secret Fleet trusts a Flisk site by (today: the value of Fleet's CHAT_SERVICE_SECRET)
+#   INFERENCE_KEY                           a key from inference.flisk.si for written answers
+# Without the GitHub and Fleet secrets Learn still works; Practice shows the labs and says computers are not set up.
