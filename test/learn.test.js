@@ -101,6 +101,13 @@ describe('labs', () => {
 });
 
 describe('pages', () => {
+  test('every mode loads Flisk Analytics in the head', async () => {
+    for (const path of ['/', '/learn', '/practice', '/exam']) {
+      const html = await (await get(path)).text();
+      expect(html.slice(0, html.indexOf('</head>'))).toContain('<script defer data-domain="learn.flisk.si" src="https://flisk.sh/a.js"></script>');
+    }
+  });
+
   test('the three modes and a lab page open', async () => {
     for (const [path, words] of [['/', 'What do you want to learn?'], ['/learn', 'What do you want to learn?'], ['/practice', 'What do you want to practice?'], ['/exam', 'Ready to prove it?']]) {
       const res = await get(path);

@@ -525,6 +525,7 @@ export function page({ mode = 'learn', lab = null, login = '', model = false, co
 <style>${CSS}</style>
 <script>try{var t=JSON.parse(localStorage.getItem('learn:look'));if(t==='ivory')document.documentElement.dataset.theme=t}catch(e){}</script>
 <script src="https://flisk.si/assets/bar.js" defer></script>
+<script defer data-domain="learn.flisk.si" src="https://flisk.sh/a.js"></script>
 </head>
 <body>
 <div class="app">
