@@ -25,3 +25,4 @@ export const SETUP = 'export PATH=$HOME/.local/bin:$HOME/.npm-global/bin:$PATH L
 export const inLabDir = (lab, command) => `${SETUP}; mkdir -p ${labDir(lab)} && cd ${labDir(lab)} && set -a && { [ ! -f .env ] || . ./.env; } && set +a && ( ${command}\n)`;
 // A file a learner may open or save: a plain relative path inside the lab's folder.
 export const safeFile = (path) => (/^[A-Za-z0-9_][A-Za-z0-9_./-]{0,120}$/.test(String(path)) && !String(path).split('/').some((p) => p === '..' || p === '') ? String(path) : null);
+export const LAB_IDS = Object.keys(data.labs);

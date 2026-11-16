@@ -144,6 +144,13 @@ describe('pages', () => {
     expect(script).not.toContain('</script');
     expect(() => new Function(script)).not.toThrow();
   });
+  test('the sitemap lists the pages and every lab, and robots.txt points to it', async () => {
+    const xml = await (await get('/sitemap.xml')).text();
+    expect(xml).toContain('<loc>https://learn.flisk.si/</loc>');
+    expect(xml).toContain(`<loc>https://learn.flisk.si/practice/${LAB}</loc>`);
+    expect(await (await get('/robots.txt')).text()).toContain('Sitemap: https://learn.flisk.si/sitemap.xml');
+    expect(await (await get('/')).text()).toContain('property="og:title"');
+  });
   test('robots.txt keeps crawlers off query strings and the API', async () => {
     const text = await (await get('/robots.txt')).text();
     expect(text).toContain('Disallow: /*?');
