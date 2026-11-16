@@ -9,6 +9,7 @@ import { fleetClient } from './fleet.js';
 import { LAB_IDS, inLabDir, labById, labDir, labsFor, safeFile, stepOf } from './labs.js';
 import { page, PROVIDERS } from './page.js';
 import { clearSession, makeSession, readSession, sameOrigin } from './session.js';
+import { withSecurityHeaders } from './security-headers.js';
 
 const MODES = ['learn', 'practice', 'exam'];
 const ANSWERS_PER_DAY = 60; // written answers a day for everyone together; LEARN_AI_PER_DAY overrides it
@@ -205,8 +206,8 @@ export async function handle(request, env, { fetchImpl = fetch, cache = globalTh
 }
 
 export default {
-  fetch: (request, env) => handle(request, env).catch((err) => {
+  fetch: async (request, env) => withSecurityHeaders(await handle(request, env).catch((err) => {
     console.error('[learn]', err);
     return json(500, { error: 'Something broke on our side.' });
-  }),
+  })),
 };
