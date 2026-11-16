@@ -6,7 +6,7 @@ import { verifyLoginToken } from './login-token.js';
 import { githubAuthorizeUrl, githubLogin } from './auth.js';
 import { answerMessages, askModel, finishAnswer, MAX_QUESTION, passagesFor, takeToday } from './answer.js';
 import { fleetClient } from './fleet.js';
-import { inLabDir, labById, labDir, labsFor, safeFile, stepOf } from './labs.js';
+import { LAB_IDS, inLabDir, labById, labDir, labsFor, safeFile, stepOf } from './labs.js';
 import { page, PROVIDERS } from './page.js';
 import { clearSession, makeSession, readSession, sameOrigin } from './session.js';
 
@@ -136,8 +136,13 @@ export async function handle(request, env, { fetchImpl = fetch, cache = globalTh
   if (request.method === 'GET' || request.method === 'HEAD') {
     if (path === '/healthz') return new Response('ok');
     // The pages take no query string, so crawlers get no endless address space to walk.
-    if (path === '/robots.txt') return new Response('User-agent: *\nDisallow: /*?\nDisallow: /api/\nDisallow: /auth/\n', { headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'public, max-age=86400' } });
+    if (path === '/robots.txt') return new Response('User-agent: *\nDisallow: /*?\nDisallow: /api/\nDisallow: /auth/\n\nSitemap: https://learn.flisk.si/sitemap.xml\n', { headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'public, max-age=86400' } });
 
+    if (path === '/sitemap.xml') {
+      const base = new URL(env.PUBLIC_ORIGIN || 'https://learn.flisk.si').origin;
+      const paths = ['/', '/practice', '/exam', ...LAB_IDS.map((id) => `/practice/${id}`)];
+      return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${paths.map((u) => `<url><loc>${base}${u}</loc></url>`).join('')}</urlset>`, { headers: { 'content-type': 'application/xml', 'cache-control': 'public, max-age=3600' } });
+    }
     if (path === '/auth/login' && env.LOGIN_PUBLIC_KEY && env.SESSION_SECRET) {
       // One Flisk sign-in for every site (login.flisk.si): no GitHub app or secret of our own, only its public key.
       const state = crypto.randomUUID();
