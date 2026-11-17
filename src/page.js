@@ -142,7 +142,7 @@ main{min-width:0;padding:22px clamp(16px,4vw,48px) 64px}
 [hidden]{display:none!important}
 @media (max-width:900px){.linkbtn{min-height:44px;padding:0 4px}}
 @media (max-width:1180px){.work{grid-template-columns:minmax(0,1fr);max-width:820px}.computer{position:static;order:-1}}
-@media (max-width:900px){.app{grid-template-columns:minmax(0,1fr)}.side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);gap:12px}.side nav,.side .more{display:none}.account{margin-top:0;border-top:0;padding-top:0}.work{grid-template-columns:minmax(0,1fr)}.computer{position:static}.welcome{padding-top:5vh}.q{max-width:92%}}
+@media (max-width:900px){.app{grid-template-columns:minmax(0,1fr)}.side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);gap:12px}.side{display:contents}.side nav,.side .more{display:none}.brand{order:-1;padding:14px 16px 0}.account{order:1;margin-top:0;border-top:1px solid var(--line);padding:14px 16px}.work{grid-template-columns:minmax(0,1fr)}.computer{position:static}.welcome{padding-top:5vh}.q{max-width:92%}}
 `;
 
 const sidebar = (login) => `
