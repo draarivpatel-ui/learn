@@ -108,6 +108,15 @@ describe('pages', () => {
     }
   });
 
+  test('each mode has a short plain lead under the headline', async () => {
+    for (const path of ['/', '/learn', '/practice', '/exam']) {
+      const html = await (await get(path)).text();
+      const m = /<h1>[^<]*<\/h1><p>([^<]+)<\/p>/.exec(html);
+      expect(m).not.toBeNull();
+      expect(m[1].split(/\s+/).length).toBeLessThanOrEqual(32);
+    }
+  });
+
   test('the three modes and a lab page open', async () => {
     for (const [path, words] of [['/', 'What do you want to learn?'], ['/learn', 'What do you want to learn?'], ['/practice', 'What do you want to practice?'], ['/exam', 'Ready to prove it?']]) {
       const res = await get(path);

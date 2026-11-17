@@ -16,9 +16,9 @@ export const PROVIDERS = [
 ];
 
 const MODES = {
-  learn: { label: 'Learn', title: 'What do you want to learn?', hint: 'Ask about Flisk or AI engineering', needs: 'Answers from the Flisk docs, with the pages named.' },
-  practice: { label: 'Practice', title: 'What do you want to practice?', hint: 'Name a skill, or pick a lab below', needs: 'Every lab runs on your own computer from Fleet.' },
-  exam: { label: 'Exam', title: 'Ready to prove it?', hint: 'Name a topic to be tested on', needs: 'Tasks on a fresh computer, scored by Flisk Wolf.' },
+  learn: { label: 'Learn', title: 'What do you want to learn?', lead: 'Made for developers new to Flisk. Ask a question and get an answer from the Flisk docs, with the pages named.', hint: 'Ask about Flisk or AI engineering', needs: 'Answers from the Flisk docs, with the pages named.' },
+  practice: { label: 'Practice', title: 'What do you want to practice?', lead: 'Hands-on labs for developers. Pick a lab and run it on your own computer from Fleet.', hint: 'Name a skill, or pick a lab below', needs: 'Every lab runs on your own computer from Fleet.' },
+  exam: { label: 'Exam', title: 'Ready to prove it?', lead: 'A test for developers who know Flisk. You get tasks on a fresh computer, scored by Flisk Wolf.', hint: 'Name a topic to be tested on', needs: 'Tasks on a fresh computer, scored by Flisk Wolf.' },
 };
 const EXAMPLES = ['How do I add a backend service?', 'What is service.json?', 'How do I run database migrations?', 'How do I see why a service is unhealthy?'];
 const labCode = (id) => id.split('-')[0];
@@ -171,7 +171,7 @@ const box = (mode) => `
   <div class="box-row"><span>${esc(MODES[mode].needs)}</span><button class="send" aria-label="Send"${mode === 'exam' ? ' disabled' : ''}><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg></button></div>
 </form>`;
 
-const welcome = (mode) => `<div class="welcome"><h1>${esc(MODES[mode].title)}</h1></div>`;
+const welcome = (mode) => `<div class="welcome"><h1>${esc(MODES[mode].title)}</h1><p>${esc(MODES[mode].lead)}</p></div>`;
 
 const learnView = () => `
 <div class="col" data-view="learn">
