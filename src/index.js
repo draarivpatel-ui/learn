@@ -12,6 +12,15 @@ import { clearSession, makeSession, readSession, sameOrigin } from './session.js
 import { appleTouchIcon } from './apple-touch-icon.js';
 import { withSecurityHeaders } from './security-headers.js';
 
+const LLMS = `# Flisk Learn
+
+> Learn how the Flisk tools work, practise the steps on your own Fleet computer, and check what you know. Free, no sign-in.
+
+- [Learn](https://learn.flisk.si/)
+- [Practice](https://learn.flisk.si/practice)
+- [Exam](https://learn.flisk.si/exam) — not built yet; the page says what it will be.
+`;
+
 const SECURITY_TXT = `Contact: https://github.com/flisk-sh/learn/security/advisories/new
 Expires: 2027-06-01T00:00:00Z
 Preferred-Languages: en
@@ -145,8 +154,9 @@ export async function handle(request, env, { fetchImpl = fetch, cache = globalTh
     if (path === '/healthz') return new Response('ok');
     if (path === '/apple-touch-icon.png') return new Response(appleTouchIcon, { headers: { 'content-type': 'image/png', 'cache-control': 'public, max-age=31536000, immutable' } });
     // The pages take no query string, so crawlers get no endless address space to walk.
+    if (path === '/llms.txt') return new Response(LLMS, { headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'public, max-age=86400' } });
     if (path === '/.well-known/security.txt') return new Response(SECURITY_TXT, { headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'public, max-age=86400' } });
-    if (path === '/robots.txt') return new Response('User-agent: *\nDisallow: /*?\nDisallow: /api/\nDisallow: /auth/\n\nSitemap: https://learn.flisk.si/sitemap.xml\n', { headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'public, max-age=86400' } });
+    if (path === '/robots.txt') return new Response('User-agent: *\nAllow: /llms.txt\nDisallow: /*?\nDisallow: /api/\nDisallow: /auth/\n\nSitemap: https://learn.flisk.si/sitemap.xml\n', { headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'public, max-age=86400' } });
     if (path === '/favicon.ico') return new Response(ICON_SVG, { headers: { 'content-type': 'image/svg+xml; charset=utf-8', 'cache-control': 'public, max-age=86400', 'x-content-type-options': 'nosniff' } });
 
     if (path === '/sitemap.xml') {
