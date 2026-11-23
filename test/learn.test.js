@@ -142,7 +142,13 @@ describe('pages', () => {
     expect(await (await get(`/practice/${LAB}`)).text()).toContain('href="/auth/login">Sign in with GitHub</a>');
     const text = await (await get(`/practice/${LAB}`, baseEnv, { cookie: await signedIn() })).text();
     expect(text).toContain('data-open>Open a computer</button>');
-    expect(text).toContain('Signed in as <b>ada</b>');
+    expect(text).toContain('Signed in as <b data-flisk-login>ada</b>');
+  });
+  test('only a signed-in page exposes the login for the org bar, escaped', async () => {
+    expect(await (await get(`/practice/${LAB}`)).text()).not.toContain('data-flisk-login');
+    const res = await get('/practice', baseEnv, { cookie: await signedIn() });
+    expect(res.headers.get('cache-control')).toContain('no-store');
+    expect(await res.text()).toMatch(/<b data-flisk-login>ada<\/b>/);
   });
   test('a site without Fleet says computers are not set up', async () => {
     expect(await (await get(`/practice/${LAB}`, { PUBLIC_ORIGIN: ORIGIN })).text()).toContain('Computers are not set up on this site yet');

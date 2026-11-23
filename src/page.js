@@ -163,7 +163,7 @@ const sidebar = (login) => `
     <a href="https://chat.flisk.si/">Build something in chat</a>
   </div>
   <div class="account">${login
-    ? `<span>Signed in as <b>${esc(login)}</b></span><form method="post" action="/auth/logout"><button class="linkbtn">Sign out</button></form>`
+    ? `<span>Signed in as <b data-flisk-login>${esc(login)}</b></span><form method="post" action="/auth/logout"><button class="linkbtn">Sign out</button></form>`
     : `<a class="btn ghost" href="/auth/login">Sign in with GitHub</a><span class="fine">Only Practice needs it, to open your computer.</span>`}</div>
 </aside>`;
 
