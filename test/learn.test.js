@@ -139,7 +139,7 @@ describe('pages', () => {
     for (const path of ['/nope', '/practice/no-such-lab', '/learn/extra', `/practice/${LAB}/more`, '/practice/__proto__']) expect((await get(path)).status).toBe(404);
   });
   test('a visitor is asked to sign in on a lab; a signed-in learner gets the open button', async () => {
-    expect(await (await get(`/practice/${LAB}`)).text()).toContain('href="/auth/login">Sign in with GitHub</a>');
+    expect(await (await get(`/practice/${LAB}`)).text()).toContain('href="/auth/login">Start free with GitHub</a>');
     const text = await (await get(`/practice/${LAB}`, baseEnv, { cookie: await signedIn() })).text();
     expect(text).toContain('data-open>Open a computer</button>');
     expect(text).toContain('Signed in as <b data-flisk-login>ada</b>');
@@ -170,6 +170,27 @@ describe('pages', () => {
     const text = await (await get('/robots.txt')).text();
     expect(text).toContain('Disallow: /*?');
     expect(text).toContain('Disallow: /api/');
+  });
+});
+
+describe('the standard sign-in button', () => {
+  const live = { ...baseEnv, LOGIN_PUBLIC_KEY: 'k' };
+  test('the first screen says Start free with GitHub, with the no-card line and the utm tags', async () => {
+    const text = await (await get('/', live)).text();
+    expect(text).toContain('href="/auth/login?utm_source=learn&utm_medium=cta&utm_campaign=free-key">Start free with GitHub</a>');
+    expect(text).toContain('No card. Free to start.');
+    expect(text).not.toContain('Sign in with GitHub');
+    expect(text.match(/utm_source=learn/g)).toHaveLength(1);
+  });
+  test('the sign-in route ignores the utm tags', async () => {
+    const res = await get('/auth/login?utm_source=learn&utm_medium=cta&utm_campaign=free-key', live);
+    expect(res.status).toBe(302);
+    expect(res.headers.get('location')).not.toContain('utm_');
+  });
+  test('where sign-in is not set up there is no button, only the honest line', async () => {
+    const text = await (await get('/', baseEnv)).text();
+    expect(text).toContain('Sign-in is not set up on this site yet.');
+    expect(text).not.toContain('Start free with GitHub</a>');
   });
 });
 

@@ -42,7 +42,7 @@ test.describe('practice', () => {
     await page.goto(`/practice/${LAB}`);
     await page.getByRole('button', { name: 'Check step 1' }).click();
     await expect(page.getByText(/sign in/i).first()).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Sign in with GitHub' }).first()).toHaveAttribute('href', '/auth/login');
+    await expect(page.getByRole('link', { name: 'Start free with GitHub' }).first()).toHaveAttribute('href', '/auth/login');
   });
 });
 
