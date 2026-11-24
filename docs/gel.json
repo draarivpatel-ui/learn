@@ -12,7 +12,12 @@
     "five-second-test": "block",
     "migrations-append-only": "block",
     "release-integrity": "block",
-    "tests-with-change": "block"
+    "tests-with-change": "block",
+    "next-cta": "block",
+    "repo-health": "report",
+    "status-declared": "report",
+    "dependabot-config": "report",
+    "product-brief": "report"
   },
   "north_star": {
     "metric": "share of signed-in learners who finish one lab on their own computer",
@@ -24,5 +29,10 @@
     "result": "docs/north-star/result.json",
     "evidence": "docs/north-star/README.md",
     "max_age_days": 30
+  },
+  "next_cta": {
+    "rendered": {
+      "result": "bench/next-cta-rendered.json"
+    }
   }
 }
