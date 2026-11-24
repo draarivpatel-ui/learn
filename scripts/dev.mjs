@@ -63,6 +63,7 @@ const env = {
   FLEET_URL: 'http://fleet.local',
   FLEET_SERVICE_SECRET: 'local-run-only',
   SESSION_SECRET: 'local-run-only',
+  LOGIN_PUBLIC_KEY: 'local-run-only',
   ...(process.env.LEARN_DEV_MODEL === 'off' ? {} : { INFERENCE_URL: 'http://inference.local/v1/chat/completions', INFERENCE_KEY: 'local-run-only' }),
   ...(process.env.LEARN_DEV_SIGNED_OUT ? {} : { DEV_LOGIN: 'dev-learner' }),
 };

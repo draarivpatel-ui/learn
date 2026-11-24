@@ -138,7 +138,7 @@ main{min-width:0;padding:22px clamp(16px,4vw,48px) 64px}
 .field input,.field select,.editor textarea{border:1px solid var(--line2);background:var(--bg);border-radius:var(--radius);padding:8px 10px;width:100%}
 .editor textarea{min-height:220px;font-family:var(--mono);font-size:13px;resize:vertical}
 .editor b{font:500 12px var(--mono)}
-.fine{font-size:12px;color:var(--dim);margin:0}
+.cta{display:grid;gap:6px;justify-items:center;margin:26px 0 0}.fine{font-size:12px;color:var(--dim);margin:0}
 .examcard{border:1px solid var(--line);background:var(--panel);border-radius:var(--radius);padding:18px 20px;margin:26px 0 0;text-align:left}
 .examcard h2{font-size:15px;margin:0 0 8px}
 .examcard ol{margin:0 0 14px;padding-left:20px;color:var(--dim)}
@@ -149,7 +149,11 @@ main{min-width:0;padding:22px clamp(16px,4vw,48px) 64px}
 @media (max-width:900px){.app{grid-template-columns:minmax(0,1fr)}.side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);gap:12px}.side{display:contents}.side nav,.side .more{display:none}.brand{order:-1;padding:14px 16px 0}.account{order:1;margin-top:0;border-top:1px solid var(--line);padding:14px 16px}.work{grid-template-columns:minmax(0,1fr)}.computer{position:static}.welcome{padding-top:5vh}.q{max-width:92%}}
 `;
 
-const sidebar = (login) => `
+export const SIGN_IN_LABEL = 'Start free with GitHub';
+export const SIGN_IN_NOTE = 'No card. Free to start.';
+const HERO_SIGN_IN = '/auth/login?utm_source=learn&utm_medium=cta&utm_campaign=free-key';
+
+const sidebar = (login, signIn) => `
 <aside class="side">
   <a class="brand" href="/">learn<span>.flisk</span></a>
   <nav aria-label="Your path">
@@ -164,7 +168,9 @@ const sidebar = (login) => `
   </div>
   <div class="account">${login
     ? `<span>Signed in as <b data-flisk-login>${esc(login)}</b></span><form method="post" action="/auth/logout"><button class="linkbtn">Sign out</button></form>`
-    : `<a class="btn ghost" href="/auth/login">Sign in with GitHub</a><span class="fine">Only Practice needs it, to open your computer.</span>`}</div>
+    : signIn
+      ? `<a class="btn ghost" href="/auth/login">Sign in</a><span class="fine">Only Practice needs it, to open your computer.</span>`
+      : `<span class="fine">Sign-in is not set up on this site yet. Learn works without it.</span>`}</div>
 </aside>`;
 
 const switcher = (mode) => `<nav class="switch" aria-label="Mode">${Object.entries(MODES).map(([id, m]) => `<a href="/${id}"${id === mode ? ' aria-current="page"' : ''}>${m.label}</a>`).join('')}</nav>`;
@@ -175,20 +181,20 @@ const box = (mode) => `
   <div class="box-row"><span>${esc(MODES[mode].needs)}</span><button class="send" aria-label="Send"${mode === 'exam' ? ' disabled' : ''}><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg></button></div>
 </form>`;
 
-const welcome = (mode) => `<div class="welcome"><h1>${esc(MODES[mode].title)}</h1><p>${esc(MODES[mode].lead)}</p></div>`;
+const welcome = (mode, hero = false) => `<div class="welcome"><h1>${esc(MODES[mode].title)}</h1><p>${esc(MODES[mode].lead)}</p>${hero ? `<p class="cta"><a class="btn" href="${HERO_SIGN_IN}">${SIGN_IN_LABEL}</a><span class="fine">${SIGN_IN_NOTE}</span></p>` : ''}</div>`;
 
-const learnView = () => `
+const learnView = (hero) => `
 <div class="col" data-view="learn">
-  ${welcome('learn')}
+  ${welcome('learn', hero)}
   <div class="thread" data-thread aria-live="polite"></div>
   <div style="text-align:center">${switcher('learn')}</div>
   ${box('learn')}
   <div class="chips">${EXAMPLES.map((q) => `<button type="button" class="chip" data-example>${esc(q)}</button>`).join('')}</div>
 </div>`;
 
-const labList = () => `
+const labList = (hero) => `
 <div class="col" data-view="labs">
-  ${welcome('practice')}
+  ${welcome('practice', hero)}
   <div style="text-align:center">${switcher('practice')}</div>
   ${box('practice')}
   <p class="empty" data-nolabs hidden>No lab matches that. Clear the box to see them all.</p>
@@ -228,8 +234,8 @@ const labView = (lab, login, computers) => `
   <section class="computer" data-computer data-state="off" aria-label="Your computer">
     <header><span><i></i>Your computer · Fleet · <span data-state-text>off</span></span><button type="button" class="linkbtn" data-stop hidden>Stop</button></header>
     <div class="body">
-      <p class="say" data-say role="status">${!computers ? 'Computers are not set up on this site yet. Run each command on your own machine and compare with "You pass when".' : login ? 'Open a computer to run this lab. It is yours, from the provider you connected to Fleet.' : 'Sign in with GitHub to open a computer for this lab.'}</p>
-      ${!computers ? '' : login ? '<button type="button" class="btn" data-open>Open a computer</button>' : '<a class="btn" href="/auth/login">Sign in with GitHub</a>'}
+      <p class="say" data-say role="status">${!computers ? 'Computers are not set up on this site yet. Run each command on your own machine and compare with "You pass when".' : login ? 'Open a computer to run this lab. It is yours, from the provider you connected to Fleet.' : 'Start free with GitHub to open a computer for this lab.'}</p>
+      ${!computers ? '' : login ? '<button type="button" class="btn" data-open>Open a computer</button>' : `<a class="btn" href="/auth/login">${SIGN_IN_LABEL}</a><span class="fine">${SIGN_IN_NOTE}</span>`}
       <form data-connect hidden>
         <div style="display:grid;gap:10px">
           <p class="say">Fleet has no computer provider for you yet. Paste one key; Fleet keeps it, this site does not.</p>
@@ -438,7 +444,7 @@ function client(BOOT) {
     };
     const open = async () => {
       if (computer) return computer;
-      if (!BOOT.login || !BOOT.computers) { say(BOOT.computers ? 'Sign in with GitHub to open a computer.' : 'Computers are not set up on this site yet.', true); return null; }
+      if (!BOOT.login || !BOOT.computers) { say(BOOT.computers ? 'Start free with GitHub to open a computer.' : 'Computers are not set up on this site yet.', true); return null; }
       state('starting'); say('Starting your computer…');
       const r = await post('/api/computer', { lab: LAB });
       if (r.needProvider) { state('off'); $('[data-connect]', panel).hidden = false; $('[data-open]', panel).hidden = true; say(''); return null; }
@@ -512,10 +518,10 @@ function client(BOOT) {
   }
 }
 
-export function page({ mode = 'learn', lab = null, login = '', model = false, computers = false, notice = '', canonical = '' } = {}) {
+export function page({ mode = 'learn', lab = null, login = '', model = false, computers = false, signIn = true, notice = '', canonical = '' } = {}) {
   const boot = { mode, lab: lab?.id || null, login, model, computers, parts: PARTS.map((p) => ({ id: p.id, labs: p.labs })), labs: Object.fromEntries(LAB_CARDS.map((l) => [l.id, { id: l.id, steps: l.steps }])) };
   const title = lab ? `${lab.title} · Flisk Learn` : `${MODES[mode].label} · Flisk Learn`;
-  const view = mode === 'exam' ? examView() : mode === 'practice' ? (lab ? labView(lab, login, computers) : labList()) : learnView();
+  const view = mode === 'exam' ? examView() : mode === 'practice' ? (lab ? labView(lab, login, computers) : labList(!login && signIn)) : learnView(!login && signIn);
   return `<!doctype html>
 <html lang="en" data-theme="dark">
 <head>
@@ -538,7 +544,7 @@ ${canonical ? `<meta property="og:type" content="website"><meta property="og:tit
 </head>
 <body>
 <div class="app">
-${sidebar(login)}
+${sidebar(login, signIn)}
 <main>
   <div class="top"><button type="button" class="linkbtn" data-look>Light look</button></div>
   ${notice ? `<div class="col"><p class="notice" role="alert">${esc(notice)}</p></div>` : ''}

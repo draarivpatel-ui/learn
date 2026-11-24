@@ -205,7 +205,7 @@ export async function handle(request, env, { fetchImpl = fetch, cache = globalTh
     const [, first = 'learn', second, extra] = path.split('/');
     const mode = path === '/' ? 'learn' : first;
     const session = env.DEV_LOGIN ? { login: env.DEV_LOGIN } : await readSession(env, request);
-    const seen = { login: session?.login || '', model: modelOn(env), computers: Boolean(env.FLEET_SERVICE_SECRET) };
+    const seen = { login: session?.login || '', model: modelOn(env), computers: Boolean(env.FLEET_SERVICE_SECRET), signIn: Boolean(env.SESSION_SECRET && (env.LOGIN_PUBLIC_KEY || env.GITHUB_CLIENT_ID)) };
     if (!MODES.includes(mode) || extra !== undefined || (second !== undefined && mode !== 'practice')) return html(page({ ...seen, mode: 'learn', notice: 'That page does not exist.' }), 404);
     const lab = second === undefined ? null : labById(second);
     if (second !== undefined && !lab) return html(page({ ...seen, mode: 'practice', notice: 'That lab does not exist.' }), 404);
@@ -219,7 +219,7 @@ export async function handle(request, env, { fetchImpl = fetch, cache = globalTh
   if (path === '/api/ask') return ask(request, env, { fetchImpl, cache });
   if (['/api/connect', '/api/computer', '/api/check', '/api/run', '/api/file', '/api/stop'].includes(path)) {
     const session = env.DEV_LOGIN ? { login: env.DEV_LOGIN } : await readSession(env, request);
-    if (!session) return json(401, { error: 'Sign in with GitHub to open a computer.', signIn: true });
+    if (!session) return json(401, { error: 'Start free with GitHub to open a computer.', signIn: true });
     return practice(path, request, env, session.login, fetchImpl);
   }
   return json(404, { error: 'not found' });
