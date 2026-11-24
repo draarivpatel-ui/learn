@@ -55,6 +55,10 @@ code,pre,.mono{font-family:var(--mono);font-size:13px}
 .btn.ghost{background:transparent;color:var(--ink);border-color:var(--line2)}
 .btn.ghost:hover{border-color:var(--ink)}
 .btn[disabled]{opacity:.5;cursor:default}
+@property --next-cta-angle{syntax:'<angle>';initial-value:0deg;inherits:false}
+.next-cta{border:2px solid transparent;background:linear-gradient(var(--btn),var(--btn)) padding-box,conic-gradient(from var(--next-cta-angle),#ef4444,#f59e0b,#eab308,#22c55e,#3b82f6,#8b5cf6,#ef4444) border-box;animation:next-cta-spin 3s linear infinite}
+@keyframes next-cta-spin{to{--next-cta-angle:360deg}}
+@media (prefers-reduced-motion:reduce){.next-cta{animation:none}}
 .linkbtn{background:none;border:0;padding:0;color:var(--dim);text-decoration:underline;cursor:pointer;font-size:13px}
 main{min-width:0;padding:22px clamp(16px,4vw,48px) 64px}
 .top{display:flex;justify-content:flex-end;align-items:center;gap:14px;min-height:28px;font-size:13px;color:var(--dim)}
@@ -181,7 +185,7 @@ const box = (mode) => `
   <div class="box-row"><span>${esc(MODES[mode].needs)}</span><button class="send" aria-label="Send"${mode === 'exam' ? ' disabled' : ''}><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg></button></div>
 </form>`;
 
-const welcome = (mode, hero = false) => `<div class="welcome"><h1>${esc(MODES[mode].title)}</h1><p>${esc(MODES[mode].lead)}</p>${hero ? `<p class="cta"><a class="btn" href="${HERO_SIGN_IN}">${SIGN_IN_LABEL}</a><span class="fine">${SIGN_IN_NOTE}</span></p>` : ''}</div>`;
+const welcome = (mode, hero = false) => `<div class="welcome"><h1>${esc(MODES[mode].title)}</h1><p>${esc(MODES[mode].lead)}</p>${hero ? `<p class="cta"><a class="btn next-cta" data-next-cta href="${HERO_SIGN_IN}">${SIGN_IN_LABEL}</a><span class="fine">${SIGN_IN_NOTE}</span></p>` : ''}</div>`;
 
 const learnView = (hero) => `
 <div class="col" data-view="learn">
