@@ -5,7 +5,7 @@ export const words = (text) => (String(text).toLowerCase().match(/[a-z0-9][a-z0-
 
 // { n, avg, len: [words per section], terms: { word: [section, count, section, count, …] } }
 export function buildIndex(texts) {
-  const terms = {};
+  const terms = Object.create(null);
   const len = [];
   texts.forEach((text, i) => {
     const counts = new Map();
@@ -23,8 +23,8 @@ export function search(index, question, limit = 6) {
   const matched = new Map();
   const asked = new Set(words(question));
   for (const w of asked) {
+    if (!Object.hasOwn(index.terms, w)) continue;
     const list = index.terms[w];
-    if (!list) continue;
     const idf = Math.log(1 + (index.n - list.length / 2 + 0.5) / (list.length / 2 + 0.5));
     for (let k = 0; k < list.length; k += 2) {
       const i = list[k], tf = list[k + 1];
